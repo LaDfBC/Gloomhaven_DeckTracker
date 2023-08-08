@@ -1,0 +1,49 @@
+apply plugin: 'java'
+
+version ='0.0.1'
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
+group = "com.jaerapps"
+
+wrapper {
+    gradleVersion = 8.1
+}
+
+task fatJar(type: Jar) { dependsOn test
+    manifest {
+        attributes 'Implementation-Title': 'Gloomhaven-Deck-Tracker',
+                'Implementation-Version': version,
+                'Main-Class': 'com.jaerapps.MainRunner'
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    archiveBaseName = project.name + '-all'
+    from {
+        configurations
+                .runtimeClasspath
+                .findAll { !it.name.endsWith('pom') }
+                .collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
+}
+
+dependencies {
+    implementation 'net.dv8tion:JDA:5.0.0-beta.9'
+    implementation 'com.google.inject:guice:7.0.0'
+    implementation 'org.flywaydb:flyway-maven-plugin:9.16.3'
+    implementation 'org.flywaydb:flyway-core:7.4.0'
+    implementation 'org.jooq:jooq:3.14.4'
+    implementation 'org.jooq:jooq-meta:3.14.4'
+    implementation 'org.jooq:jooq-codegen:3.14.4'
+    implementation 'org.postgresql:postgresql:42.2.27'
+}
